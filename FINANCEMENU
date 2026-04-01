@@ -1,4 +1,7 @@
-<!doctype html>
+{
+  "name": "van-subaru-finance-app",
+  ...
+}
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
