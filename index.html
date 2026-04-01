@@ -1,0 +1,138 @@
+import React, { useState } from "react";
+
+export default function App() {
+  const [interest, setInterest] = useState(4000);
+  const [taxRate, setTaxRate] = useState(20);
+  const [term, setTerm] = useState(60);
+  const [closeMode, setCloseMode] = useState(false);
+
+  const [vsc, setVSC] = useState(0);
+  const [gap, setGAP] = useState(0);
+  const [club, setClub] = useState(0);
+  const [maintenance, setMaintenance] = useState(0);
+  const [paint, setPaint] = useState(0);
+
+  const productsTotal = vsc + gap + club + maintenance + paint;
+  const totalInterest = interest + productsTotal;
+
+  const taxSavings = totalInterest * (taxRate / 100);
+  const netCost = totalInterest - taxSavings;
+  const monthlyCost = netCost / term;
+
+  const baseTaxSavings = interest * (taxRate / 100);
+  const baseNet = interest - baseTaxSavings;
+
+  const wrapStyle = {
+    padding: 16,
+    maxWidth: 980,
+    margin: "0 auto",
+    color: closeMode ? "#fff" : "#111",
+    background: closeMode ? "#000" : "#fff",
+    minHeight: "100vh"
+  };
+
+  const card = {
+    borderRadius: 16,
+    boxShadow: "0 10px 20px rgba(0,0,0,0.08)",
+    padding: 16,
+    marginBottom: 16,
+    border: closeMode ? "1px solid #333" : "1px solid #eee"
+  };
+
+  const btn = (active=false) => ({
+    padding: "8px 12px",
+    borderRadius: 12,
+    border: active ? "1px solid #111" : "1px solid #ccc",
+    background: active ? "#111" : "#fff",
+    color: active ? "#fff" : "#111",
+    cursor: "pointer"
+  });
+
+  return (
+    <div style={wrapStyle}>
+      {/* Header */}
+      <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom: 12}}>
+        <div style={{display:"flex", alignItems:"center", gap: 12}}>
+          <img src="/logo.png" alt="Logo" style={{height: 44}} />
+          <div>
+            <div style={{fontSize: 22, fontWeight: 700}}>Van Subaru of North Kansas City</div>
+            <div style={{opacity: 0.7}}>Real Cost vs Tax-Adjusted Cost</div>
+          </div>
+        </div>
+        <button onClick={()=>setCloseMode(!closeMode)} style={btn(false)}>
+          {closeMode ? "Exit Close Mode" : "Close Mode"}
+        </button>
+      </div>
+
+      {/* Base */}
+      <div style={card}>
+        <div style={{marginBottom: 12}}>
+          <div>Base Interest: ${interest}</div>
+          <input type="range" min="0" max="10000" step="500" value={interest} onChange={(e)=>setInterest(parseInt(e.target.value))} style={{width:"100%"}} />
+        </div>
+
+        <div style={{marginBottom: 12}}>
+          <div>Tax Rate: {taxRate}%</div>
+          <input type="range" min="10" max="40" step="1" value={taxRate} onChange={(e)=>setTaxRate(parseInt(e.target.value))} style={{width:"100%"}} />
+        </div>
+
+        <div style={{display:"flex", gap:8, flexWrap:"wrap"}}>
+          {[60,63,66,72,75].map(t => (
+            <button key={t} onClick={()=>setTerm(t)} style={btn(term===t)}>{t} mo</button>
+          ))}
+        </div>
+      </div>
+
+      {/* Products */}
+      <div style={card}>
+        <div style={{fontWeight:600, marginBottom: 8}}>Add Protection Products</div>
+        <Slider label="VSC (Service Contract)" value={vsc} setValue={setVSC} max={9000} />
+        <Slider label="GAP" value={gap} setValue={setGAP} max={1295} />
+        <Slider label="CLUB PLUS (Tire & Wheel, Dent & Ding, Windshield, Keyfob)" value={club} setValue={setClub} max={2420} />
+        <Slider label="Maintenance" value={maintenance} setValue={setMaintenance} max={2400} />
+        <Slider label="Paint & Interior Protection" value={paint} setValue={setPaint} max={1288} />
+      </div>
+
+      {/* Comparison */}
+      <div style={card}>
+        <div style={{fontWeight:600, marginBottom: 8}}>Comparison</div>
+        <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap: 12}}>
+          <div style={{padding:12, borderRadius:12, border:"1px solid #ddd"}}>
+            <div style={{fontWeight:600}}>No Products</div>
+            <div>Total: ${interest.toLocaleString()}</div>
+            <div>Tax Savings: ${baseTaxSavings.toLocaleString()}</div>
+            <div style={{fontWeight:700}}>Net: ${baseNet.toLocaleString()}</div>
+          </div>
+          <div style={{padding:12, borderRadius:12, border:"1px solid #ddd"}}>
+            <div style={{fontWeight:600}}>With Products</div>
+            <div>Total: ${totalInterest.toLocaleString()}</div>
+            <div>Tax Savings: ${taxSavings.toLocaleString()}</div>
+            <div style={{fontWeight:700}}>Net: ${netCost.toLocaleString()}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Close */}
+      <div style={card}>
+        <div style={{textAlign:"center"}}>
+          <div style={{opacity:0.8}}>Estimated Monthly Impact</div>
+          <div style={{fontSize: 36, fontWeight: 800}}>${monthlyCost.toFixed(2)} / mo</div>
+          <div style={{opacity:0.7}}>Over {term} months</div>
+        </div>
+      </div>
+
+      <div style={{fontSize: 12, opacity: 0.7, textAlign: "center"}}>
+        Estimated potential tax benefit. Customer should consult a tax professional.
+      </div>
+    </div>
+  );
+}
+
+function Slider({label, value, setValue, max}) {
+  return (
+    <div style={{marginBottom: 10}}>
+      <div>{label}: ${value}</div>
+      <input type="range" min="0" max={max} step="100" value={value} onChange={(e)=>setValue(parseInt(e.target.value))} style={{width:"100%"}} />
+    </div>
+  );
+}
